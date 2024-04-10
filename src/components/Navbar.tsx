@@ -1,7 +1,6 @@
 'use client'
 import { useAuth } from "@/_context/AuthContext";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type UserProps = {
@@ -23,6 +22,7 @@ export default function Navbar() {
         }
         if (token === 'undefined' || token === undefined)
             return;
+        console.log(typeof isLoggedIn)
         setLoggedIn(isLoggedIn);
         setUser({
             ...user,
