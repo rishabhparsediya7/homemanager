@@ -8,7 +8,8 @@ import { converter } from "@/utils/currencyFormatter";
 
 type ExpenseType = {
     name: string;
-    amount: number;
+    amount: string;
+    expenseType: string;
 }
 
 export default function Expense() {
@@ -23,11 +24,15 @@ export default function Expense() {
     const [loading, setLoading] = useState<boolean>(false);
     const [expenseList, setExpenseList] = useState([]);
 
-    const getSum = () => expenseList.reduce((total, curr: number) => parseFloat(curr.amount) + total, 0)
-
+    function getSum() {
+        const sum: number = expenseList.reduce((total, curr: ExpenseType) => parseFloat(curr.amount) + total, 0)
+        return sum.toString();
+    }
     const toggleModal = () => {
         const body = document.querySelector(".bodyy");
-        body.classList.toggle("open-modal");
+        if (body !== null) {
+            body.classList.toggle("open-modal");
+        }
     }
     const handleExpenseTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
         setExpenseType(event.target.value);
@@ -39,7 +44,7 @@ export default function Expense() {
             let email, guid;
             if (typeof window !== "undefined") {
                 const storageUser = localStorage.getItem("user");
-                const user = JSON.parse(storageUser);
+                const user = JSON.parse(JSON.stringify(storageUser));
                 email = user.email;
                 guid = user.uid;
             }
@@ -67,7 +72,7 @@ export default function Expense() {
             let email;
             if (typeof window !== "undefined") {
                 const storageUser = localStorage.getItem("user");
-                const user = JSON.parse(storageUser);
+                const user = JSON.parse(JSON.stringify(storageUser));
                 email = user.email;
             }
             const response = await fetch('/api/expense', {
