@@ -5,10 +5,10 @@ export async function GET(req: NextRequest, res: NextResponse) {
   const client = await clientPromise;
   const db = client.db("test");
   const { searchParams } = new URL(req.url);
-  const guid = searchParams.get("uuid");
+  const guid = searchParams.get("guid");
   const email = searchParams.get("email");
   const user = await db
-    .collection("homemanagerexpenses")
+    .collection("homemanagerexpense")
     .findOne({ guid: guid, email: email });
   if (user) {
     return NextResponse.json({ user: user, ok: true });
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const db = client.db("test");
   const reqBody = await req.json();
   const user = await db
-    .collection("homemanagerexpenses")
+    .collection("homemanagerexpense")
     .insertOne(reqBody);
   if (user) {
     return NextResponse.json({ user: user, ok: true });

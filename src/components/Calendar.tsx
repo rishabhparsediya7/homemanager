@@ -3,24 +3,20 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-
+import { months, weekdays, supArray } from '@/lib/constants';
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 export default function CalendarApp() {
-    const months: string[] = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-    const supArray: string[] = ["st", "nd", 'rd', "th"];
-    const weekdays: string[] = [
-        "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-    ];
     const [value, onChange] = useState<Value>(new Date());
     const [date, setDate] = useState<string>('');
+    const [dateQuery, setDateQuery] = useState('');
     useEffect(() => {
-        const d: string[] = value?.toLocaleString().split(',')[0].split('/');
+        const q = value?.toLocaleString();
+        const query = new Date(String(q));
+        setDateQuery(String(query.getDate().toString().padStart(2, '0') + "-" + (query.getMonth() + 1).toString().padStart(2, '0') + "-" + query.getFullYear().toString()));
+        const d = value?.toLocaleString().split(',')[0].split('/');
         if (d !== undefined) {
             const num: number = Math.floor(parseInt(d[1]) % 10);
             let sup = '';
@@ -47,8 +43,8 @@ export default function CalendarApp() {
         <div className='flex flex-col'>
             <Calendar onChange={onChange} value={value} />
             <div className='w-full text-center flex justify-between items-center py-2 gap-y-2'>
-                <p>{date}</p>
-                <Link href="/expense" className='bg-indigo-600 px-4 py-2 text-white w-fit rounded-md'>
+                <p className='border-b border-gray-500 text-black'>{date}</p>
+                <Link href={`/expense/${dateQuery}`} className='bg-black px-4 py-2 text-white w-fit rounded-md'>
                     Get Expenses
                 </Link>
             </div>

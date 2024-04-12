@@ -10,7 +10,6 @@ interface CustomMongoClientOptions extends MongoClientOptions {
 }
 
 const uri: string = process.env.MONGO_URI || "";
-console.log(uri);
 const options: CustomMongoClientOptions = {
   useUnifiedTopology: true,
   useNewUrlParser: true,

@@ -1,5 +1,5 @@
 export default function Loader() {
     return (
-        <h1>Loading...</h1>
+        <div className="loader absolute top-1/2 left-[45%]"></div>
     )
 }

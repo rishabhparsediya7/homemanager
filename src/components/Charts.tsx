@@ -1,43 +1,20 @@
-import React, { useEffect, useState } from "react";
+import { months } from "@/lib/constants";
 import Chart from "chart.js";
-import { months, weekdays } from "@/lib/constants";
-import { getWeek } from "@/utils/getCurrentWeek";
-export default function ExpenseChart() {
-    const [dataList, setDataList] = useState([]);
-    const weekArray = getWeek();
-    const fetchWeekData = async () => {
-        let email;
-        if (typeof window !== "undefined") {
-            const storageUser = localStorage.getItem("user");
-            const user = JSON.parse(storageUser);
-            email = user.email;
-        }
-        const response = await fetch('/api/chart', {
-            method: 'post',
-            body: JSON.stringify({ weekArray, email }),
-            headers: {
-                'content-type': 'application/json'
-            }
-        })
-        if (response.status === 200) {
-            const result = await response.json();
-            setDataList(result.weekArray)
-        }
-        else {
-            console.log('not settring the data')
-        }
-    }
+import { useEffect } from "react";
+
+
+export default function Charts({ id, data, bgColor, labelArray, label, titleText }: { id: string, data: number[], labelArray: string[], label: string, titleText: string, bgColor: string }) {
     const getChart = () => {
         let config = {
             type: "bar",
             data: {
-                labels: weekArray,
+                labels: labelArray,
                 datasets: [
                     {
                         label: months[new Date().getMonth()],
                         backgroundColor: "#3949AB",
                         borderColor: "#3949AB",
-                        data: dataList,
+                        data: data,
                         fill: true,
                         color: "#3949AB",
                         barThickness: 10,
@@ -49,7 +26,7 @@ export default function ExpenseChart() {
                 responsive: true,
                 title: {
                     display: true,
-                    text: "Current Week Expense Chart",
+                    text: titleText,
                 },
                 tooltips: {
                     mode: "index",
@@ -105,34 +82,30 @@ export default function ExpenseChart() {
                 },
             },
         };
-        let ctx = document.getElementById("bar-chart").getContext("2d");
+        let ctx = document.getElementById(id).getContext("2d");
         window.myBar = new Chart(ctx, config);
     }
     useEffect(() => {
-        fetchWeekData()
-    }, [])
-    useEffect(() => {
-        getChart()
-    }, [dataList]);
-    return (
-        <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
-            <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
-                <div className="flex flex-wrap items-center">
-                    <div className="relative w-full max-w-full flex-grow flex-1">
-                        <h6 className="uppercase text-blueGray-400 mb-1 text-xs font-semibold">
-                            This Week
-                        </h6>
-                        <h2 className="text-blueGray-700 text-xl font-semibold">
-                            Days Expense
-                        </h2>
-                    </div>
-                </div>
-            </div>
-            <div className="p-4 sm:p-16 h-[30rem]  flex-auto">
-                <div className="relative bg-slate-100 rounded-md h-full">
-                    <canvas id="bar-chart" className="h-full"></canvas>
+        getChart();
+    }, []);
+    return (<div>
+        <div className="rounded-t mb-0 px-4 py-3 bg-transparent">
+            <div className="flex flex-wrap items-center">
+                <div className="relative w-full max-w-full flex-grow flex-1">
+                    <h6 className="uppercase text-blueGray-400 mb-1 text-xs font-semibold">
+                        This Week
+                    </h6>
+                    <h2 className="text-blueGray-700 text-xl font-semibold">
+                        {label}
+                    </h2>
                 </div>
             </div>
         </div>
-    );
+        <div className="p-4 sm:p-16 h-[30rem]  flex-auto">
+            <div className={`relative ${bgColor} rounded-md h-full`}>
+                <canvas id={id} className="h-full"></canvas>
+            </div>
+        </div>
+    </div>
+    )
 }

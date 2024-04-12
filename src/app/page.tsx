@@ -3,7 +3,7 @@ import TypewriterComponent from "typewriter-effect";
 import { KeyRound, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "@/_context/AuthContext";
+import { useAuth } from "@/app/_context/AuthContext";
 import { useEffect } from "react";
 import { redirect } from "next/navigation";
 
