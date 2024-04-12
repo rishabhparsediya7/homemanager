@@ -6,9 +6,9 @@ export async function GET(req: NextRequest, res: NextResponse) {
     const client = await clientPromise;
     const db = client.db("test");
     const { searchParams } = new URL(req.url);
-    const email = searchParams.get("email");
-    const date = searchParams.get("date");
-    const d: string = date.toString();
+    const email: string = String(searchParams.get("email"));
+    const date: string = String(searchParams.get("date"));
+    const d: string = date;
 
     const expenses = await db
       .collection("homemanagerexpense")
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
 export async function POST(req: NextRequest, res: NextResponse) {
   const client = await clientPromise;
   const db = client.db("test");
-  
+
   try {
     const reqBody = await req.json();
     const { email, date } = reqBody;
