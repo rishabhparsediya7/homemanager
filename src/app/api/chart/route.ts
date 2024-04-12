@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 
+type reduceType = {
+  amount: string;
+  name: string;
+  expenseType: string;
+};
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const reqBody = await req.json();
@@ -17,7 +22,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       if (result[0].expense[week] !== undefined) {
         dataList.push(
           result[0].expense[week].reduce(
-            (acc: number, curr: number) => parseFloat(curr.amount) + acc,
+            (acc: number, curr: reduceType) => parseFloat(curr.amount) + acc,
             0
           )
         );
