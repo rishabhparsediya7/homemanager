@@ -1,7 +1,9 @@
 import { months } from "@/lib/constants";
 import Chart from "chart.js";
 import { useEffect } from "react";
-
+interface Window {
+    myBar?: Chart; // Define myBar as an optional property of type Chart
+}
 
 export default function Charts({ id, data, bgColor, labelArray, label, titleText }: { id: string, data: number[], labelArray: string[], label: string, titleText: string, bgColor: string }) {
     const getChart = () => {
@@ -82,8 +84,18 @@ export default function Charts({ id, data, bgColor, labelArray, label, titleText
                 },
             },
         };
-        let ctx = document.getElementById(id).getContext("2d");
-        window.myBar = new Chart(ctx, config);
+        let canvas = document.getElementById(id) as HTMLCanvasElement | null;
+        if (canvas !== null) {
+            let ctx = canvas.getContext("2d");
+            if (ctx !== null) {
+                window.myBar = new Chart(ctx, config);
+            } else {
+                console.error("2D context is null");
+            }
+        } else {
+            console.error("Canvas element not found");
+        }
+
     }
     useEffect(() => {
         getChart();
