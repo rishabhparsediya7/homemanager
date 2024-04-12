@@ -88,14 +88,13 @@ export default function Charts({ id, data, bgColor, labelArray, label, titleText
         if (canvas !== null) {
             let ctx = canvas.getContext("2d");
             if (ctx !== null) {
-                window.myBar = new Chart(ctx, config);
+                window['myBar'] = new Chart(ctx, config);
             } else {
                 console.error("2D context is null");
             }
         } else {
             console.error("Canvas element not found");
         }
-
     }
     useEffect(() => {
         getChart();
