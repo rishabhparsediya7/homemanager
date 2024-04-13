@@ -79,7 +79,6 @@ const Expense = () => {
     const handleExpenseTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
         setExpenseType(event.target.value);
     };
-
     const fetchAllTheExpenses = useCallback(async () => {
         setLoading(true);
         try {
