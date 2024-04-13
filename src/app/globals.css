@@ -44,7 +44,8 @@
   .modal-window {
     position: fixed;
     top: 50%;
-    right: -300px;
+    right: -500px;
+    max-width: 400px;
     translate: 50% -50%;
     background: #ffffff;
     color: #000000;
@@ -180,8 +181,5 @@
     font-family: "Lato", sans-serif;
     font-weight: 400;
     font-style: normal;
-  }
-  .dropdown:hover .dropdown-menu {
-    display: block;
   }
 }

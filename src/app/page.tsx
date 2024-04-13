@@ -6,13 +6,14 @@ import Link from "next/link";
 import { useAuth } from "@/app/_context/AuthContext";
 import { useEffect } from "react";
 import { redirect } from "next/navigation";
+import { isAuthenticated } from "@/utils/Auth";
 
 export default function Home() {
   const { googleSignIn } = useAuth();
-
+  const isAuth = isAuthenticated();
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token !== null) {
+    if (token !== null && isAuth === true) {
       redirect('/home')
     }
   }, [])

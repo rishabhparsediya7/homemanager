@@ -40,12 +40,15 @@ export default function CalendarApp() {
     }, [value])
 
     return (
-        <div className='flex flex-col'>
-            <Calendar onChange={onChange} value={value} />
-            <div className='w-full text-center flex justify-between items-center py-2 gap-y-2'>
-                <p className='border-b border-gray-500 text-black'>{date}</p>
-                <Link href={`/expense/${dateQuery}`} className='bg-black px-4 py-2 text-white w-fit rounded-md'>
+        <div className='flex flex-col justify-center items-center'>
+            <Calendar className="w-full" onChange={onChange} value={value} />
+            <div className='w-full text-center flex flex-col py-2 gap-y-3'>
+                <p className='border-b w-fit mt-2 border-gray-500 text-black text-left'>{date}</p>
+                <Link href={`/expense/${dateQuery}`} className='bg-black uppercase tracking-wider w-full px-4 py-2 text-white rounded-3xl'>
                     Get Expenses
+                </Link>
+                <Link href='/expense' className='bg-black uppercase tracking-wider w-full px-4 py-2 text-white rounded-3xl'>
+                    expenses in Graphs
                 </Link>
             </div>
         </div>

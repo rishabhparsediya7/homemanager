@@ -1,33 +1,6 @@
 import clientPromise from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, res: NextResponse) {
-  try {
-    const client = await clientPromise;
-    const db = client.db("test");
-    const { searchParams } = new URL(req.url);
-    const email: string = String(searchParams.get("email"));
-    const date: string = String(searchParams.get("date"));
-    const d: string = date;
-
-    const expenses = await db
-      .collection("homemanagerexpense")
-      .find({ email: email }, { projection: { _id: 0, expense: 1 } })
-      .toArray();
-    if (expenses === undefined) return NextResponse.json({ expense: [] });
-    if (
-      expenses !== null &&
-      expenses !== undefined &&
-      expenses[0].expense !== null &&
-      expenses[0].expense !== undefined
-    ) {
-      return NextResponse.json({ expense: expenses[0].expense[d] });
-    }
-    return NextResponse.json({ expense: [] });
-  } catch (error) {
-    return NextResponse.json("Could not fetch the expenses");
-  }
-}
 
 export async function POST(req: NextRequest, res: NextResponse) {
   const client = await clientPromise;
@@ -35,48 +8,53 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
   try {
     const reqBody = await req.json();
-    const { email, date } = reqBody;
-    const expenseArray = await db
+    const { email, ...newItem } = reqBody;
+    const response = await db
       .collection("homemanagerexpense")
-      .find({ email: email }, { projection: { _id: 0, expense: 1 } })
-      .toArray();
-    const newItem = {
-      name: reqBody.name,
-      amount: reqBody.amnt,
-      expenseType: reqBody.expenseType,
-    };
-    const d = date.toString();
-    let allItems;
-    if (
-      expenseArray === undefined ||
-      expenseArray[0] === undefined ||
-      expenseArray[0].expense === undefined
-    ) {
-      allItems = {};
-    } else {
-      allItems = expenseArray[0].expense || {};
-    }
-    if (allItems[d] === undefined) {
-      allItems[d] = [newItem];
-    } else {
-      allItems[d].push(newItem);
-    }
-    const result = await db
-      .collection("homemanagerexpense")
-      .updateOne({ email: email }, { $set: { expense: allItems } });
-
-    if (result.modifiedCount === 1) {
-      return NextResponse.json({ success: true }, { status: 200 });
+      .updateOne({ email: email }, { $push: { expenseFilter: newItem } });
+    if (response.modifiedCount === 1) {
+      return NextResponse.json({ message: "Success" }, { status: 200 });
     } else {
       return NextResponse.json(
-        { error: "No document found to update" },
-        { status: 404 }
+        { message: "Could not add the Expense" },
+        { status: 400 }
       );
     }
-  } catch (error) {
+  } catch (err) {
+    console.log(err);
     return NextResponse.json(
-      { message: "Could not update the doc" },
+      { message: "Could not add the Expense" },
       { status: 400 }
     );
+  }
+}
+
+export async function GET(req: NextRequest, res: NextResponse) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("test");
+    const { searchParams } = new URL(req.url);
+    const email: string = String(searchParams.get("email"));
+    const date: string = String(searchParams.get("date"));
+    const response = await db
+      .collection("homemanagerexpense")
+      .aggregate([
+        { $match: { email: email } },
+        { $unwind: "$expenseFilter" },
+        { $match: { "expenseFilter.date": date } },
+        {
+          $group: {
+            _id: "$_id",
+            matchingExpenses: { $push: "$expenseFilter" },
+          },
+        },
+      ])
+      .toArray();
+    if (response.length === 0 || response[0].matchingExpenses === undefined)
+      return NextResponse.json({ expense: [] });
+    else return NextResponse.json({ expense: response[0].matchingExpenses });
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ message: error }, { status: 404 });
   }
 }

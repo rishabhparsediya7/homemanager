@@ -2,7 +2,7 @@
 import { useAuth } from "@/app/_context/AuthContext";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 type UserProps = {
     name: string,
@@ -10,10 +10,17 @@ type UserProps = {
 }
 
 export default function Navbar() {
+    const [isHovered, setIsHovered] = useState(false);
+    const handleMouseEnter = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        setIsHovered(true);
+    };
+
+    const handleMouseLeave = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        setIsHovered(false);
+    };
     const { googleSignIn, logOut } = useAuth();
     const [loggedIn, setLoggedIn] = useState(false);
     const [user, setUser] = useState<UserProps>({ name: "", photoUrl: "" });
-    const [toggle, setToggle] = useState<boolean>(false);
     useEffect(() => {
         const { token, user, isLoggedIn } = localStorage;
         let storageUser;
@@ -34,7 +41,7 @@ export default function Navbar() {
     }, [loggedIn])
     return (
         <nav className="bg-white">
-            <div className={`flex ${toggle ? `border-b-2` : `shadow-md`} w-full mx-auto px-2 sm:px-8 h-20 relative justify-between items-center`}>
+            <div className={`flex shadow-md w-full mx-auto px-2 sm:px-8 h-20 relative justify-between items-center`}>
                 <div className="inline-flex">
                     <a className="_o6689fn" href="/">
                         <div className="flex">
@@ -51,18 +58,7 @@ export default function Navbar() {
                 <div className="hidden sm:block flex-shrink flex-grow-0 justify-start px-2">
                     <div className="inline-block">
                         <div className="inline-flex items-center max-w-full">
-                            {/* {starting point} */}
-                            <div className="dropdown inline-block relative">
-                                <button className="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded inline-flex items-center">
-                                    <span className="mr-1">Dropdown</span>
-                                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /> </svg>
-                                </button>
-                                <ul className="dropdown-menu absolute hidden text-gray-700 pt-1">
-                                    <li className=""><a className="rounded-t bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" href="#">One</a></li>
-                                    <li className=""><a className="bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" href="#">Two</a></li>
-                                    <li className=""><a className="rounded-b bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap" href="#">Three is the magic number</a></li>
-                                </ul>
-                            </div>
+
                         </div>
                     </div>
                 </div >
@@ -81,14 +77,19 @@ export default function Navbar() {
                         </div>}
                         <div className="block">
                             <div className="inline relative">
-                                <button type="button" className="inline-flex items-center relative px-2 border rounded-full hover:shadow-lg">
-                                    <div className="pl-1 sm:pl-0 block sm:hidden" onClick={() => setToggle(!toggle)}>
+                                <div className="inline-flex items-center relative px-2 border rounded-full hover:shadow-lg">
+                                    <div
+                                        className="dropdown inline-block relative pl-1 sm:pl-0"
+                                        onMouseEnter={handleMouseEnter}
+                                        onMouseLeave={handleMouseLeave}
+                                    >
                                         <svg
                                             viewBox="0 0 32 32"
                                             xmlns="http://www.w3.org/2000/svg"
                                             aria-hidden="true"
                                             role="presentation"
                                             focusable="false"
+                                            className=""
                                             style={{ display: "block", fill: "none", height: "16px", width: "16px", stroke: "currentcolor", strokeWidth: "3", overflow: "visible" }}
                                         >
                                             <g fill="none" fillRule="nonzero">
@@ -97,6 +98,29 @@ export default function Navbar() {
                                                 <path d="m2 8h28"></path>
                                             </g>
                                         </svg>
+                                        <ul
+                                            className={`dropdown-menu shadow-lg bg-white absolute ${isHovered ? `block` : `hidden`} text-gray-700 z-40 pt-1`}>
+                                            <li className=""><a className="rounded-t hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" href="/home">Home</a></li>
+                                            <li className=""><a className=" hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" href="/expense">Expense</a></li>
+                                            {
+                                                loggedIn ?
+                                                    <li>
+                                                        <button
+                                                            className="rounded-b w-full  hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" onClick={logOut}>Logout
+                                                        </button>
+
+                                                    </li> :
+                                                    <>
+                                                        <li className="">
+                                                            <a className="rounded-b  hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" href="/">Sign In
+                                                            </a>
+                                                        </li>
+                                                        <li className="">
+                                                            <a className="rounded-b  hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" href="/">Sign Up
+                                                            </a></li>
+                                                    </>
+                                            }
+                                        </ul>
                                     </div>
                                     <div className="block flex-grow-0 flex-shrink-0 h-10 sm:h-8 sm:w-fit pl-5 sm:pl-2">
                                         {loggedIn === false ? <svg
@@ -121,43 +145,13 @@ export default function Navbar() {
                                                 </Image>
                                             </div>}
                                     </div>
-                                </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {toggle && <div className="w-full block sm:hidden h-20 shadow-md transform transition-all items-center bg-white px-5">
-                {loggedIn ?
-                    <div className="h-full flex justify-start gap-x-2 items-center">
-                        <Link className="bg-indigo-600 rounded-md text-white h-fit w-fit px-3 py-1" href="/home">Home</Link>
-                        <Link className="bg-indigo-600 rounded-md text-white h-fit w-fit px-3 py-1" href="/expense">Expense</Link>
-                        <button
-                            onClick={logOut}
-                            className="bg-indigo-600 rounded-md h-fit text-white w-fit px-3 py-1">
-                            Logout
-                        </button>
-                    </div>
-                    :
-                    <ul className="flex justify-between h-full">
-                        <li className="m-auto">
-                            <button
-                                onClick={googleSignIn}
-                                className="bg-indigo-600 rounded-md text-white w-fit px-3 py-1">
-                                Login
-                            </button>
-                        </li>
-                        <li className="m-auto">
-                            <button
-                                onClick={googleSignIn}
-                                className="bg-indigo-600 rounded-md text-white w-fit px-3 py-1">
-                                Signup
-                            </button>
-                        </li>
-                    </ul>
-                }
-            </div>
-            }
+
         </nav >
     )
 }
