@@ -9,7 +9,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   const email = searchParams.get("email");
   const user = await db
     .collection("homemanagerexpense")
-    .findOne({ guid: guid, email: email });
+    .findOne({ uid: guid, email: email });
   if (user) {
     return NextResponse.json({ user: user, ok: true });
   } else {
@@ -21,9 +21,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const client = await clientPromise;
   const db = client.db("test");
   const reqBody = await req.json();
-  const user = await db
-    .collection("homemanagerexpense")
-    .insertOne(reqBody);
+  const user = await db.collection("homemanagerexpense").insertOne(reqBody);
   if (user) {
     return NextResponse.json({ user: user, ok: true });
   } else {

@@ -1,4 +1,3 @@
-'use client'
 import { useAuth } from "@/app/_context/AuthContext";
 import Image from "next/image";
 import Link from "next/link";
@@ -64,7 +63,7 @@ export default function Navbar() {
                 </div >
                 <div className="flex-initial">
                     <div className="flex justify-end items-center relative">
-                        {!loggedIn && <div className="hidden sm:flex mr-4 gap-x-2 items-center">
+                        {!loggedIn && user.name && <div className="hidden sm:flex mr-4 gap-x-2 items-center">
                             <button
                                 onClick={googleSignIn}
                                 className="bg-indigo-600 rounded-md text-white w-fit px-3 py-1">
@@ -140,7 +139,7 @@ export default function Navbar() {
                                                     alt={user.name}
                                                     width={100}
                                                     height={100}
-                                                    className="mt-1 rounded-full h-[24px] w-[24px]"
+                                                    className="rounded-full h-[24px] w-[24px]"
                                                 >
                                                 </Image>
                                             </div>}

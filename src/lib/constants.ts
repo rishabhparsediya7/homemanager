@@ -22,3 +22,10 @@ export const weekdays: string[] = [
   "Friday",
   "Saturday",
 ];
+export const ExpenseTypeArray: string[] = [
+  "Grocery",
+  "Food",
+  "Travel",
+  "Other",
+  "Bills",
+];

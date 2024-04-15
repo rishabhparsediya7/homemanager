@@ -19,10 +19,10 @@ import { redirect } from "next/navigation";
 import Loader from "@/components/Loader";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-
+import { useRouter } from "next/navigation";
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
-  authDomain: process.env.AUTH_DOMAIN,
+  authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
   storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
@@ -40,18 +40,17 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | null>(null);
 
 const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false);
   const googleSignIn = () => {
     setLoading(true);
     const provider = new GoogleAuthProvider();
+    let credential, token: string, user: any;
     signInWithPopup(auth, provider)
       .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
-        const user = result.user;
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('token', JSON.stringify(token));
-        localStorage.setItem('isLoggedIn', true.toString());
+        credential = GoogleAuthProvider.credentialFromResult(result);
+        token = String(credential?.accessToken);
+        user = result.user;
         const { email, uid } = user;
         fetch(`/api/auth?email=${email}&guid=${uid}`)
           .then((response) => {
@@ -75,7 +74,7 @@ const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     throw new Error('Could not save the user!');
                   }
                   else {
-                    redirect('/home')
+                    router.push('/home')
                   }
                 })
                 .catch(err => console.log(err))
@@ -88,6 +87,9 @@ const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log(error);
       }).finally(() => {
         setLoading(false);
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', JSON.stringify(token));
+        localStorage.setItem('isLoggedIn', true.toString());
       });
   };
   if (loading)

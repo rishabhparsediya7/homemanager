@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
-import { weekdays } from "@/lib/constants";
+import { ExpenseTypeArray, weekdays } from "@/lib/constants";
 import { getMonthDates } from "@/utils/getCurrentWeek";
 
 type reduceType = {
@@ -36,26 +36,37 @@ export async function POST(req: NextRequest, res: NextResponse) {
     };
     const collection = db.collection("homemanagerexpense");
     const result = await collection.find(query).toArray();
-    const groupArray = result[0].expenseFilter.reduce(
-      (group: any, expense: any) => {
-        const { date } = expense;
-        group[date] = group[date] ?? [];
-        group[date].push(expense);
-        return group;
-      },
-      {}
-    );
-    const dataList = Object.keys(groupArray).sort();
     const weekData: number[] = [];
-    for (var i = 0; i < 7; i++) {
-      if (dataList.includes(weekArray[i])) {
-        const value = groupArray[weekArray[i]];
-        const sum = value.reduce((acc: any, curr: any) => curr.amount + acc, 0);
-        weekData.push(sum);
-      } else weekData.push(0);
+    if (result.length !== 0 && result[0].expenseFilter !== undefined) {
+      const groupArray = result[0].expenseFilter.reduce(
+        (group: any, expense: any) => {
+          const { date } = expense;
+          group[date] = group[date] ?? [];
+          group[date].push(expense);
+          return group;
+        },
+        {}
+      );
+      const dataList = Object.keys(groupArray).sort();
+
+      for (var i = 0; i < 7; i++) {
+        if (dataList.includes(weekArray[i])) {
+          const value = groupArray[weekArray[i]];
+          const sum = value.reduce(
+            (acc: any, curr: any) => curr.amount + acc,
+            0
+          );
+          weekData.push(sum);
+        } else weekData.push(0);
+      }
+    } else {
+      for (var i = 0; i < 7; i++) {
+        weekData.push(0);
+      }
     }
     return NextResponse.json({ weekArray: weekData }, { status: 200 });
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ message: "Failure" }, { status: 400 });
   }
 }
@@ -69,7 +80,7 @@ export async function GET(req: NextRequest) {
     const collection = db.collection("homemanagerexpense");
     let pipeline;
     const type = searchParams.get("type");
-    if (type === "month") {
+    if (type === "month" || type === "expenseType") {
       const email = searchParams.get("email");
       const date = new Date();
       const start = new Date(
@@ -106,24 +117,16 @@ export async function GET(req: NextRequest) {
           },
         },
       ];
-    } else if (type === "expenseType") {
-      const email = searchParams.get("email");
-      const date = searchParams.get("date");
-      pipeline = [
-        { $match: { email: email } },
-        { $unwind: "$expenseFilter" },
-        { $match: { "expenseFilter.date": date } },
-        {
-          $group: {
-            _id: "$_id",
-            matchingExpenses: { $push: "$expenseFilter" },
-          },
-        },
-      ];
     }
 
     const result = await collection.aggregate(pipeline).toArray();
-
+    const monthData: number[] = [];
+    if (result.length === 0 || result[0].expenses === undefined) {
+      for (var i = 0; i < monthArray.length; i++) {
+        monthData.push(0);
+      }
+      return NextResponse.json({ monthData: monthData }, { status: 200 });
+    }
     if (type === "month") {
       const groupArray = result[0].expenses.reduce(
         (group: any, expense: any) => {
@@ -148,10 +151,33 @@ export async function GET(req: NextRequest) {
         } else monthData.push(0);
       }
       return NextResponse.json({ monthData: monthData }, { status: 200 });
+    } else if (type === "expenseType") {
+      const groupArray = result[0].expenses.reduce(
+        (group: any, expense: any) => {
+          const { expenseType } = expense;
+          group[expenseType] = group[expenseType] ?? [];
+          group[expenseType].push(expense);
+          return group;
+        },
+        {}
+      );
+      const expTypeArray = ExpenseTypeArray;
+      const dataList = Object.keys(groupArray).sort();
+      const ExpenseData: { type: string; amount: number }[] = [];
+      for (var i = 0; i < expTypeArray.length; i++) {
+        const value = groupArray[expTypeArray[i]];
+        const sum = value.reduce((acc: any, curr: any) => curr.amount + acc, 0);
+        const newItem = {
+          type: expTypeArray[i],
+          amount: sum,
+        };
+        ExpenseData.push(newItem);
+      }
+      return NextResponse.json({ expenseData: ExpenseData }, { status: 200 });
     }
-    return NextResponse.json(result);
+    return NextResponse.json({ message: "Error" }, { status: 404 });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(error);
+    return NextResponse.json({ message: error }, { status: 400 });
   }
 }

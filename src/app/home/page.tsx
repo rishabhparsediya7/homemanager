@@ -2,16 +2,15 @@
 
 import CalendarApp from "@/components/Calendar";
 import Navbar from "@/components/Navbar";
-import isAuth from "@/components/isAuth";
 import Image from "next/image";
-
+import withAuth from "../_auth/page";
 const Home = () => {
     return (
         <div>
             <Navbar />
             <div className="">
                 <Image
-                    className="h-[15rem] w-full"
+                    className="h-[15rem] sm:h-[10rem] w-full"
                     src="/bghom.jpg"
                     alt="bghome"
                     width={500}
@@ -33,4 +32,4 @@ const Home = () => {
     )
 }
 
-export default isAuth(Home)
+export default withAuth(Home)
