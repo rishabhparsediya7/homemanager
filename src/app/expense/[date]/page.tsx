@@ -133,7 +133,7 @@ const Expense = () => {
                             <div>
                                 <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Amount" className="border-b-2 outline-none border-b-gray-300 p-2 w-full" type="text" />
                             </div>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-3 gap-1">
                                 {
                                     expenseTypeArray.map((expense: string) => (
                                         <div key={expense} className="space-x-2">
