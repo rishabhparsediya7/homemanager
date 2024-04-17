@@ -45,10 +45,11 @@ export default function CalendarApp() {
         <div className='flex flex-col justify-center items-center'>
             <Calendar className="w-full" onChange={onChange} value={value} />
             <div className='w-full text-center flex flex-col py-2 gap-y-3'>
+                { }
                 {date && <p className='border-b w-fit mt-2 border-gray-500 text-black text-left'>{date}</p>}
-                <Link href={`/expense/${dateQuery}`} className='bg-black uppercase tracking-wider w-full px-4 py-2 text-white rounded-3xl'>
-                    Get Expenses
-                </Link>
+                {dateQuery && <Link href={`/expense/${dateQuery}`} className='bg-black uppercase tracking-wider w-full px-4 py-2 text-white rounded-3xl'>
+                    Get Expenses at {dateQuery}
+                </Link>}
                 <Link href='/expense' className='bg-black uppercase tracking-wider w-full px-4 py-2 text-white rounded-3xl'>
                     expenses in Graphs
                 </Link>
