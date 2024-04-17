@@ -29,7 +29,7 @@ const Landing = () => {
           >
           </Image>
         </div>
-        <div className="w-full absolute top-40 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div className="w-full absolute top-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <div className="flex justify-center items-center">
             <h1 className="text-5xl block sm:hidden text-white font-bold texteffect">
               <TypewriterComponent options={{
