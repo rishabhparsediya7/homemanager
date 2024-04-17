@@ -12,6 +12,7 @@ export default function CalendarApp() {
     const [value, onChange] = useState<Value>(new Date());
     const [date, setDate] = useState<string>('');
     const [dateQuery, setDateQuery] = useState('');
+    console.log(value, date, dateQuery)
     useEffect(() => {
         const q = value?.toLocaleString();
         const query = new Date(String(q));
@@ -35,6 +36,7 @@ export default function CalendarApp() {
             }
             const dat = new Date(parseInt(d[2]), parseInt(d[0]) - 1, parseInt(d[1]));
             const dt: string = (weekdays[dat.getDay()] + ", " + d[1] + sup + " " + months[parseInt(d[0]) - 1] + ", " + d[2]).toString();
+            console.log(dt)
             setDate(dt);
         }
     }, [value])
@@ -43,7 +45,7 @@ export default function CalendarApp() {
         <div className='flex flex-col justify-center items-center'>
             <Calendar className="w-full" onChange={onChange} value={value} />
             <div className='w-full text-center flex flex-col py-2 gap-y-3'>
-                <p className='border-b w-fit mt-2 border-gray-500 text-black text-left'>{date}</p>
+                {date && <p className='border-b w-fit mt-2 border-gray-500 text-black text-left'>{date}</p>}
                 <Link href={`/expense/${dateQuery}`} className='bg-black uppercase tracking-wider w-full px-4 py-2 text-white rounded-3xl'>
                     Get Expenses
                 </Link>

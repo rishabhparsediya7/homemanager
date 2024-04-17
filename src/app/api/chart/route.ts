@@ -159,7 +159,6 @@ export async function GET(req: NextRequest) {
       .collection("homemanagerexpense")
       .aggregate(pipeline)
       .toArray();
-    console.log(result);
     if (result.length === 0 || result[0].expenseFilter === undefined) {
       return NextResponse.json({ result: [] });
     }
