@@ -1,13 +1,14 @@
 'use client'
 import { Charts } from "@/components/Charts";
 import Navbar from "@/components/Navbar";
-import { getMonthDates, getWeek } from "@/utils/getCurrentWeek";
+import { getDatesInCurrentMonthWithTimes, getMonthDates, getWeek } from "@/utils/getCurrentWeek";
 import { Suspense, useEffect, useState } from "react";
 import withAuth from "../_auth/page";
 import { PieChart } from "@/components/PieChart";
 import Image from "next/image";
 import Loader from "@/components/Loader";
 import { converter } from "@/utils/currencyFormatter";
+import { ExpenseTypeArray } from "@/lib/constants";
 type DataListProps = {
     label: string,
     data: number[],
@@ -37,13 +38,11 @@ const ExpenseChart = () => {
     });
     const [name, setName] = useState('');
     const [photoUrl, setPhotoUrl] = useState('');
-    const [expenseData, setExpenseData] = useState([]);
-    const [expenseLabels, setExpenseLabels] = useState([]);
+    const [lastLogin, setLastLogin] = useState(0);
+    const [expenseData, setExpenseData] = useState<number[]>([]);
+    const [expenseLabels, setExpenseLabels] = useState<string[]>([]);
     const weekArray = getWeek();
-    const monthArray = getMonthDates()
     let email: string;
-
-
     const getWeekData = async () => {
         try {
             const response = await fetch(`/api/chart`, {
@@ -53,7 +52,7 @@ const ExpenseChart = () => {
                     'content-type': 'application/json'
                 }
             })
-            const dataWeek = await response.json();
+            const dataWeek = await response.json();           
             setWeekData({
                 ...weekData,
                 labels: weekArray,
@@ -72,12 +71,28 @@ const ExpenseChart = () => {
             const response = await fetch(`/api/chart?type=month&email=${email}`)
             if (response.status === 200) {
                 const dataMonth = await response.json();
+                const monthArray = getDatesInCurrentMonthWithTimes();
+                const groupArray = dataMonth[0].expenseFilter.reduce((group: any, expense: any) => {
+                    const { date } = expense;
+                    group[date] = group[date] ?? [];
+                    group[date].push(expense);
+                    return group;
+                }, {});
+                const dataList = Object.keys(groupArray).sort();
+                const monthData: number[] = [];
+                for (var i = 0; i < monthArray.length; i++) {
+                    if (dataList.includes(monthArray[i])) {
+                        const value = groupArray[monthArray[i]];
+                        const sum = value.reduce((acc: any, curr: any) => curr.amount + acc, 0);
+                        monthData.push(sum);
+                    } else monthData.push(0);
+                }
                 setMonthData({
                     ...monthData,
-                    labels: monthArray,
+                    labels: getMonthDates(),
                     datasets: [{
                         label: 'Expense This Month',
-                        data: dataMonth.monthData,
+                        data: monthData,
                         backgroundColor: '#252525'
                     }]
                 })
@@ -91,8 +106,27 @@ const ExpenseChart = () => {
             const response = await fetch(`/api/chart?type=expenseType&email=${email}`)
             if (response.status === 200) {
                 const dataExpense = await response.json();
-                setExpenseData(dataExpense.expenseData.map((expense: any) => expense.amount))
-                setExpenseLabels(dataExpense.expenseData.map((expense: any) => expense.type))
+                const groupArray = dataExpense[0].expenseFilter.reduce((group: any, expense: any) => {
+                    const { expenseType } = expense;
+                    group[expenseType] = group[expenseType] ?? [];
+                    group[expenseType].push(expense);
+                    return group;
+                }, {});
+                const expTypeArray = ExpenseTypeArray;
+                const ExpenseData = [];
+                for (var i = 0; i < expTypeArray.length; i++) {
+                    if (groupArray[expTypeArray[i]]) {
+                        const value = groupArray[expTypeArray[i]];
+                        const sum = value.reduce((acc: any, curr: any) => curr.amount + acc, 0);
+                        const newItem = {
+                            type: expTypeArray[i],
+                            amount: sum,
+                        };
+                        ExpenseData.push(newItem);
+                    }
+                }
+                setExpenseData(ExpenseData.map((expense: any) => expense.amount))
+                setExpenseLabels(ExpenseData.map((expense) => expense.type))
             }
         } catch (error) {
             console.log(error);
@@ -103,6 +137,7 @@ const ExpenseChart = () => {
             if (typeof window !== undefined) {
                 const user = JSON.parse(String(localStorage.getItem('user')));
                 email = user.email;
+                setLastLogin(parseInt(user.lastLoginAt))
                 setName(user.displayName);
                 setPhotoUrl(user.photoURL)
 
@@ -119,8 +154,8 @@ const ExpenseChart = () => {
             <Navbar />
             <Suspense fallback={<Loader />}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4">
-                    <div className="shadow-md bg-[#f0fff0] rounded-md flex flex-col p-4">
-                       {photoUrl && <div className="flex space-x-2">
+                    <div className="shadow-md text-white bg-gradient-to-br from-black to-transparent rounded-md flex flex-col p-4">
+                        {photoUrl && <div className="flex space-x-2">
                             <div className="h-20 w-20">
                                 <Image className="rounded-md" src={photoUrl} alt={name} height={500} width={500} />
                             </div>
@@ -130,7 +165,7 @@ const ExpenseChart = () => {
                                     <span>Last Login</span>
                                     <span className="h-2 w-2 m-auto bg-green-500 rounded-full" />
                                 </p>
-                                <p className="text-xs">Mon Apr 15 2024, 12:15:16 PM</p>
+                                <p className="text-xs">{new Date(lastLogin).toDateString()},{new Date(lastLogin).toLocaleTimeString()}</p>
                             </div>
                         </div>}
                         <div className="py-2 flex-grow">
@@ -158,9 +193,9 @@ const ExpenseChart = () => {
                         </p>
                         <div className="flex flex-wrap gap-2">
                             {expenseLabels.map((expense: string, index: number) => (
-                                <div key={expense} className="flex text-white p-2 rounded-md justify-center flex-col space-y-1 bg-lime-500 w-20">
-                                    <p className="text-center text-sm">{expense}</p>
-                                    <p className="text-center text-sm">{converter(expenseData[index])}</p>
+                                <div key={index} className="flex text-white px-2 py-1 rounded-md justify-center flex-col space-y-1 bg-[#000000B7] w-fit">
+                                    <p className="text-center text-[12px]">{expense}</p>
+                                    <p className="text-center tracking-wider text-[10px]">{converter(expenseData[index].toString())}</p>
                                 </div>
                             ))}
                         </div>

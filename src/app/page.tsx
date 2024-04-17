@@ -13,7 +13,8 @@ const Landing = () => {
   const { googleSignIn } = useAuth();
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) redirect('/home')
+    const user = JSON.parse(String(localStorage.getItem('token')));
+    if (token !== undefined && user !== undefined && token !== null && user !== null) redirect('/home')
   }, [])
   return (
     <main className="flex h-full m-0">

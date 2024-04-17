@@ -35,5 +35,6 @@ next-env.d.ts
 # typescript
 *.tsbuildinfo
 .env
-index.js
+/ndex.js
 Itodo
+src/app/api/temp/

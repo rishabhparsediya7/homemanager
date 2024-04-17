@@ -16,6 +16,9 @@ type ExpenseType = {
 const Expense = () => {
     const params = useParams();
     const { date } = params;
+    const dateString: string[] = date.toString().split('-');
+    const d = `${dateString[2]}-${dateString[1].padStart(2, '0')}-${dateString[0].padStart(2, '0')}`
+    const createdAt = new Date(d).toISOString();
     const [error, setError] = useState<string>('');
     const [name, setName] = useState<string>("");
     const [dependencyCount, setDependencyCount] = useState<number>(0);
@@ -56,7 +59,7 @@ const Expense = () => {
             }
             const response = await fetch('/api/expense', {
                 method: "POST",
-                body: JSON.stringify({ date: date, name: name, amount: amnt, expenseType: expenseType, email: email }),
+                body: JSON.stringify({ date: createdAt, name: name, amount: amnt, expenseType: expenseType, email: email }),
                 headers: {
                     'content-type': 'application/json'
                 }
@@ -92,7 +95,7 @@ const Expense = () => {
                 email = user.email;
                 guid = user.uid;
             }
-            const response = await fetch(`/api/expense?email=${email}&guid=${guid}&date=${date}`);
+            const response = await fetch(`/api/expense?email=${email}&guid=${guid}&date=${createdAt}`);
             if (response.status === 400) {
                 setError('Empty Expenses')
             }

@@ -124,7 +124,7 @@ function getMonthDates() {
   let dateArray = [];
   const ending = parseInt(lastDate.getDate());
   for (var i = 1; i <= ending; i++) {
-    const newDate = new Date(date.getFullYear(), date.getMonth() , i);
+    const newDate = new Date(date.getFullYear(), date.getMonth(), i);
     let dateString = String(
       newDate.getDate().toString().padStart(2, "0") +
         "-" +
@@ -136,4 +136,44 @@ function getMonthDates() {
   }
   return dateArray;
 }
-console.log(getMonthDates());
+
+function getDateOfMonthsForFrontend() {
+  const monthArray = getMonthDates();
+  const date = new Date("2024-04-11T00:00:00.000Z");
+  console.log(date.getMonth());
+  console.log(monthArray);
+}
+// console.log(getDateOfMonthsForFrontend());
+
+function getDatesInCurrentMonthWithTimes(
+  startTime = "00:00:00",
+  endTime = "18:30:00"
+) {
+  const today = new Date();
+  const thisMonth = today.getMonth(); // 0-11 for month
+  const daysInMonth = new Date(today.getFullYear(), thisMonth + 1, 0).getDate();
+  const dates = [];
+  for (let i = 0; i < daysInMonth; i++) {
+    const currentDate = new Date(today.getFullYear(), thisMonth, i + 1);
+    const formattedEndDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate(),
+      parseInt(endTime.split(":")[0]),
+      parseInt(endTime.split(":")[1]),
+      parseInt(endTime.split(":")[2]),
+      0 // Milliseconds set to 0
+    ).toISOString();
+
+    dates.push(formattedEndDate);
+  }
+
+  return dates.map((date) => {
+    return date.replace("T13:00:00.000Z", "T00:00:00.000Z");
+  });
+}
+
+// Example usage
+const dates = getDatesInCurrentMonthWithTimes();
+
+console.log(dates);

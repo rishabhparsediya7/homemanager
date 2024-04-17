@@ -47,3 +47,30 @@ export function getMonthDates() {
   }
   return dateArray;
 }
+export function getDatesInCurrentMonthWithTimes(
+  startTime = "00:00:00",
+  endTime = "18:30:00"
+) {
+  const today = new Date();
+  const thisMonth = today.getMonth(); // 0-11 for month
+  const daysInMonth = new Date(today.getFullYear(), thisMonth + 1, 0).getDate();
+  const dates = [];
+  for (let i = 0; i < daysInMonth; i++) {
+    const currentDate = new Date(today.getFullYear(), thisMonth, i + 1);
+    const formattedEndDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate(),
+      parseInt(endTime.split(":")[0]),
+      parseInt(endTime.split(":")[1]),
+      parseInt(endTime.split(":")[2]),
+      0 // Milliseconds set to 0
+    ).toISOString();
+
+    dates.push(formattedEndDate);
+  }
+
+  return dates.map((date) => {
+    return date.replace("T13:00:00.000Z", "T00:00:00.000Z");
+  });
+}
