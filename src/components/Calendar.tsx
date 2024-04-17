@@ -16,6 +16,8 @@ export default function CalendarApp() {
     useEffect(() => {
         const q = value?.toLocaleString();
         const query = new Date(String(q));
+        console.log(query);
+        console.log(query.getDate().toString().padStart(2, '0') + "-" + (query.getMonth() + 1).toString().padStart(2, '0') + "-" + query.getFullYear().toString());
         setDateQuery(String(query.getDate().toString().padStart(2, '0') + "-" + (query.getMonth() + 1).toString().padStart(2, '0') + "-" + query.getFullYear().toString()));
         const d = value?.toLocaleString().split(',')[0].split('/');
         if (d !== undefined) {
