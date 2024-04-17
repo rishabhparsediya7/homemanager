@@ -42,7 +42,7 @@ export default function Navbar() {
         <nav className="bg-white">
             <div className={`flex shadow-md w-full mx-auto px-2 sm:px-8 h-20 relative justify-between items-center`}>
                 <div className="inline-flex">
-                    <a className="_o6689fn" href="/">
+                    <a className="_o6689fn" href="/home">
                         <div className="flex">
                             <Image
                                 src="/navlogo.png"

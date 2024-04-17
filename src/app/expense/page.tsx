@@ -52,7 +52,7 @@ const ExpenseChart = () => {
                     'content-type': 'application/json'
                 }
             })
-            const dataWeek = await response.json();           
+            const dataWeek = await response.json();
             setWeekData({
                 ...weekData,
                 labels: weekArray,
@@ -70,9 +70,9 @@ const ExpenseChart = () => {
         try {
             const response = await fetch(`/api/chart?type=month&email=${email}`)
             if (response.status === 200) {
-                const dataMonth = await response.json();
+                const { result } = await response.json();
                 const monthArray = getDatesInCurrentMonthWithTimes();
-                const groupArray = dataMonth[0].expenseFilter.reduce((group: any, expense: any) => {
+                const groupArray = result.reduce((group: any, expense: any) => {
                     const { date } = expense;
                     group[date] = group[date] ?? [];
                     group[date].push(expense);
@@ -105,8 +105,8 @@ const ExpenseChart = () => {
         try {
             const response = await fetch(`/api/chart?type=expenseType&email=${email}`)
             if (response.status === 200) {
-                const dataExpense = await response.json();
-                const groupArray = dataExpense[0].expenseFilter.reduce((group: any, expense: any) => {
+                const { result } = await response.json();
+                const groupArray = result.reduce((group: any, expense: any) => {
                     const { expenseType } = expense;
                     group[expenseType] = group[expenseType] ?? [];
                     group[expenseType].push(expense);
@@ -200,10 +200,9 @@ const ExpenseChart = () => {
                             ))}
                         </div>
                     </div>
-
+                    <div className="shadow-md rounded-md p-2"><Charts dataList={monthData} /></div>
                     <div className="shadow-md rounded-md p-2"><Charts dataList={weekData} /></div>
                     <div className="shadow-md rounded-md p-2"><PieChart expenseData={expenseData} expenseLabels={expenseLabels} /></div>
-                    <div className="shadow-md rounded-md p-2"><Charts dataList={monthData} /></div>
                 </div>
             </Suspense>
         </div>

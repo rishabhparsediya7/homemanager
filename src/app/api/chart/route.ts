@@ -58,10 +58,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
       .collection("homemanagerexpense")
       .aggregate(pipeline)
       .toArray();
-    let dateArray = weekArray.map((date:any) => {
+    let dateArray = weekArray.map((date: any) => {
       const d = date.split("-");
       return `${d[2]}-${d[1]}-${d[0]}T00:00:00.000Z`;
-    });    
+    });
     const weekData: number[] = [];
     if (result.length !== 0 && result[0].expenseFilter !== undefined) {
       const groupArray = result[0].expenseFilter.reduce(
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         {}
       );
       const dataList = Object.keys(groupArray).sort();
-      
+
       for (var i = 0; i < 7; i++) {
         if (dataList.includes(dateArray[i])) {
           const value = groupArray[dateArray[i]];
@@ -159,7 +159,11 @@ export async function GET(req: NextRequest) {
       .collection("homemanagerexpense")
       .aggregate(pipeline)
       .toArray();
-    return NextResponse.json(result);
+    console.log(result);
+    if (result.length === 0 || result[0].expenseFilter === undefined) {
+      return NextResponse.json({ result: [] });
+    }
+    return NextResponse.json({ result: result[0].expenseFilter });
   } catch (error) {
     console.log(error);
     return NextResponse.json({ message: error }, { status: 400 });
