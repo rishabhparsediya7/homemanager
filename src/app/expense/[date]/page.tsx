@@ -126,7 +126,7 @@ const Expense = () => {
                 <div className="modal-window">
                     <div className="card-container">
                         {error && <p className="text-red-400">{error}</p>}
-                        <form className="flex flex-col w-full gap-y-4 ">
+                        <form className="flex flex-col w-full gap-y-4 p-2">
                             <div className="flex">
                                 <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Expense name" className="border-b-2 outline-none border-b-gray-300 p-1.5 w-full" />
                             </div>
