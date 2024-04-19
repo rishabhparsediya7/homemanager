@@ -202,4 +202,54 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #120f0f;
   }
+  .profile-bg {
+    background: rgb(13, 12, 11);
+    background: linear-gradient(
+      93deg,
+      rgb(154, 214, 144) 40%,
+      rgb(231, 227, 227) 100%
+    );
+    color: white;
+  }
+  .chart-navigator label {
+    text-transform: capitalize;
+  }
+  .chart-navigator input {
+    display: none;
+    width: 100%;
+  }
+
+  .chart-navigator input:checked + label {
+    background-color: #c6f2a4;
+    padding: 10px;
+    color: black;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: background-color 1s ease, padding 0.3s ease, color 0.3s ease,
+      border-radius 0.3s ease;
+  }
+  .chart-navigator input:not(:checked) + label {
+    background-color: transparent;
+    padding: 10px;
+    color: black;
+    border: 1px solid gray;
+    border-radius: 10px;
+    transition: background-color 1s ease, padding 0.3s ease, color 0.3s ease,
+      border-radius 0.3s ease;
+  }
+  .bg-f9aec4 {
+    background-color: #f9aec4;
+  }
+  .bg-c6f2a4 {
+    background-color: #c6f2a4;
+  }
+  .bg-333333 {
+    background-color: #333333;
+  }
+  .bg-FFC774 {
+    background-color: #ffc774;
+  }
+  .bg-b1c5fa {
+    background-color: #b1c5fa;
+  }
 }

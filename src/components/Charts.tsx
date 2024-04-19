@@ -27,15 +27,50 @@ export const options = {
         legend: {
             labels: {
                 font: {
-                    size: 18,
+                    size: 20,
                     family: '"Lato", sans-serif'
                 }
             },
             position: 'top' as const,
+            cornerRadius: 10,
+        },
+        tooltip: {
+            cornerRadius: 20
         },
         title: {
             display: true,
             text: 'Home Manager Expense Charts',
+        },
+    },
+    scales: {
+        x: {
+            display: true,
+            grid: {
+                display: false,
+            },
+            ticks: {
+                color: "#8c8c8b",
+                font: {
+                    size: 12,
+                    weight: "500",
+                },
+                padding: 0,
+            },
+        },
+        y: {
+            display: true,
+            grid: {
+                display: false,
+                color: "#ececec",
+            },
+            ticks: {
+                color: "#8c8c8b",
+                font: {
+                    size: 12,
+                    weight: "500",
+                },
+                padding: 6,
+            },
         },
     },
 };
@@ -43,7 +78,8 @@ export const options = {
 type DataListProps = {
     label: string,
     data: number[],
-    backgroundColor: string,
+    backgroundColor: string[],
+    borderRadius: number
 }
 interface Props {
     labels: string[],

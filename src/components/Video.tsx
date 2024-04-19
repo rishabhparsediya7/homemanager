@@ -3,9 +3,7 @@ import React from "react";
 import ReactPlayer from "react-player";
 
 export default function Video() {
-    //video path
     let videosrc = "/landingvideo.mp4";
-
     return (
         <video
             className="w-full h-full object-cover"

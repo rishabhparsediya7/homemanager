@@ -100,18 +100,18 @@ export default function Navbar() {
                                         <ul
                                             className={`dropdown-menu shadow-lg bg-white absolute ${isHovered ? `block` : `hidden`} text-gray-700 z-40 pt-1`}>
                                             <li className=""><a className="rounded-t hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" href="/home">Home</a></li>
-                                            <li className=""><a className=" hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" href="/expense">Expense</a></li>
+                                            <li className=""><a className=" hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" href="/dashboard">Dashboard</a></li>
                                             {
                                                 loggedIn ?
-                                                    <li>
+                                                    <li className="">
                                                         <button
-                                                            className="rounded-b w-full  hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" onClick={logOut}>Logout
+                                                            className="rounded-b text-left px-4 w-full  hover:bg-black hover:text-white py-2 block whitespace-no-wrap" onClick={logOut}>Logout
                                                         </button>
 
                                                     </li> :
                                                     <>
                                                         <li className="">
-                                                            <a className="rounded-b  hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" href="/">Sign In
+                                                            <a className="hover:bg-black hover:text-white py-2 px-4 block whitespace-no-wrap" href="/">Sign In
                                                             </a>
                                                         </li>
                                                         <li className="">

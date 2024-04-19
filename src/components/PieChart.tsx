@@ -12,14 +12,7 @@ export function PieChart({ expenseData, expenseLabels }: { expenseData: number[]
             {
                 label: 'Expense Amount: Rs',
                 data: expenseData,
-                backgroundColor: [
-                    'rgba(192, 255, 140)',
-                    'rgba(255, 247, 140)',
-                    'rgba(255, 208, 140)',
-                    'rgba(140, 234, 255)',
-                    'rgba(255, 140, 157)',
-
-                ],
+                backgroundColor: ['#f9aec4', '#c6f2a4', '#333333', "#FFC774", "#b1c5fa"],
                 borderColor: [
                     'rgba(162, 235, 110)',
                     'rgba(225, 217, 110)',
